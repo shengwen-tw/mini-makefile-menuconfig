@@ -6,44 +6,46 @@
 #define CONTEXT_PAIR 3
 #define SHADE_PAIR 4
 
+WINDOW *worksp;
+
 void draw_column(int x, int y, char c, int pair, int len)
 {
-	attron(COLOR_PAIR(pair));
+	wattron(worksp, COLOR_PAIR(pair));
 	for(int i = 0; i < len; i++) {
-		mvaddch(x + i, y, c);
+		mvwaddch(worksp, x + i, y, c);
 	}
-	attroff(COLOR_PAIR(pair));
+	wattroff(worksp, COLOR_PAIR(pair));
 }
 
 void draw_line(int x, int y, char c, int pair, int len)
 {
-	attron(COLOR_PAIR(pair));
+	wattron(worksp, COLOR_PAIR(pair));
 	for(int i = 0; i < len; i++) {
-		mvaddch(x, y + i, c);
+		mvwaddch(worksp, x, y + i, c);
 	}
-	attroff(COLOR_PAIR(pair));
+	wattroff(worksp, COLOR_PAIR(pair));
 }
 
 void draw_background(void)
 {
 	/* title in the background */
 	char *title = " proj_config.mk - NCRL Flight Controller configuration";
-	attron(COLOR_PAIR(BACKGROUND_PAIR));
+	wattron(worksp, COLOR_PAIR(BACKGROUND_PAIR));
 	for(int j = 0; j < COLS; j++) {
 		if(j < strlen(title)) {
-			mvaddch(0, j, title[j]);
+			mvwaddch(worksp, 0, j, title[j]);
 		} else {
-			mvaddch(0, j, ' ');
+			mvwaddch(worksp, 0, j, ' ');
 		}
 	}
 	for(int j = 0; j < COLS; j++) {
 		if((j == 0) || (j == (COLS - 1))) {
-			mvaddch(1, j, ' ');
+			mvwaddch(worksp, 1, j, ' ');
 		} else {
-			mvaddch(1, j, '-');
+			mvwaddch(worksp, 1, j, '-');
 		}
 	}
-	attroff(COLOR_PAIR(BACKGROUND_PAIR));
+	wattroff(worksp, COLOR_PAIR(BACKGROUND_PAIR));
 
 	/* left/right background */
 	draw_column(2, 0, ' ', BACKGROUND_PAIR, COLS - 2);
@@ -130,6 +132,8 @@ int main(void)
 	init_pair(BACKGROUND_PAIR, COLOR_WHITE, COLOR_BLUE);
 	init_pair(CONTEXT_PAIR, COLOR_BLACK, COLOR_WHITE);
 	init_pair(SHADE_PAIR, COLOR_BLACK, COLOR_BLACK);
+
+	worksp = subwin(stdscr, LINES, COLS, 0, 0);
 
 	clear();
 	draw_background();
