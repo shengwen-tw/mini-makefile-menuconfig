@@ -1,7 +1,7 @@
 ELF=menuconfig
 
 CFLAGS = -g -Wall
-LDFLAGS = -lncurses
+LDFLAGS = -lncursesw
 
 all:
 	gcc $(CFLAGS) main.c $(LDFLAGS) -o $(ELF)
