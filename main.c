@@ -1,6 +1,7 @@
 #include <string.h>
 #include <curses.h>
 #include <stdlib.h>
+#include <locale.h>
 
 #define BACKGROUND_PAIR 2
 #define CONTEXT_PAIR 3
@@ -8,20 +9,20 @@
 
 WINDOW *worksp;
 
-void draw_column(int x, int y, char c, int pair, int len)
+void draw_column(int x, int y, char *c, int pair, int len)
 {
 	wattron(worksp, COLOR_PAIR(pair));
 	for(int i = 0; i < len; i++) {
-		mvwaddch(worksp, x + i, y, c);
+		mvwaddstr(worksp, x + i, y, c);
 	}
 	wattroff(worksp, COLOR_PAIR(pair));
 }
 
-void draw_line(int x, int y, char c, int pair, int len)
+void draw_line(int x, int y, char *c, int pair, int len)
 {
 	wattron(worksp, COLOR_PAIR(pair));
 	for(int i = 0; i < len; i++) {
-		mvwaddch(worksp, x, y + i, c);
+		mvwaddstr(worksp, x, y + i, c);
 	}
 	wattroff(worksp, COLOR_PAIR(pair));
 }
@@ -48,73 +49,75 @@ void draw_background(void)
 	wattroff(worksp, COLOR_PAIR(BACKGROUND_PAIR));
 
 	/* left/right background */
-	draw_column(2, 0, ' ', BACKGROUND_PAIR, COLS - 2);
-	draw_column(2, 1, ' ', BACKGROUND_PAIR, COLS - 2);
-	draw_column(2, COLS-1, ' ', BACKGROUND_PAIR, COLS-2);
-	draw_column(2, COLS-2, ' ', BACKGROUND_PAIR, 1);
-	draw_column(2, COLS-3, ' ', BACKGROUND_PAIR, 1);
+	draw_column(2, 0, " ", BACKGROUND_PAIR, COLS - 2);
+	draw_column(2, 1, " ", BACKGROUND_PAIR, COLS - 2);
+	draw_column(2, COLS-1, " ", BACKGROUND_PAIR, COLS-2);
+	draw_column(2, COLS-2, " ", BACKGROUND_PAIR, 1);
+	draw_column(2, COLS-3, " ", BACKGROUND_PAIR, 1);
 
 	/* lower background */
-	draw_line(LINES-2, 2, ' ', BACKGROUND_PAIR, 2);
-	draw_line(LINES-1, 2, ' ', BACKGROUND_PAIR, COLS - 3);
+	draw_line(LINES-2, 2, " ", BACKGROUND_PAIR, 2);
+	draw_line(LINES-1, 2, " ", BACKGROUND_PAIR, COLS - 3);
 
 	/* dialog lower buttons */
-	draw_line(LINES-4, 3, ' ', CONTEXT_PAIR, COLS - 7);
+	draw_line(LINES-4, 3, " ", CONTEXT_PAIR, COLS - 7);
 
 	/* dialog left border */
-	draw_column(2, 2, '|', CONTEXT_PAIR, LINES - 4);
+	draw_column(2, 2, "│", CONTEXT_PAIR, LINES - 4);
 
 	/* dialog right border */
-	draw_column(2, COLS-4, '|', CONTEXT_PAIR, LINES - 4);
+	draw_column(2, COLS-4, "│", CONTEXT_PAIR, LINES - 4);
 
 	/* dialog lower border */
-	draw_line(LINES-3, 3, '-', CONTEXT_PAIR, COLS - 7);
+	draw_line(LINES-3, 3, "─", CONTEXT_PAIR, COLS - 7);
 
 	/* dialog botton shadow */
-	draw_line(LINES-2, 4, ' ', SHADE_PAIR, COLS - 6);
+	draw_line(LINES-2, 4, " ", SHADE_PAIR, COLS - 6);
 
 	/* dialog inner left border */
-	draw_column(6, 3, ' ', CONTEXT_PAIR, LINES - 10);
-	draw_column(6, 4, '|', CONTEXT_PAIR, LINES - 10);
+	draw_column(6, 3, " ", CONTEXT_PAIR, LINES - 10);
+	draw_column(6, 4, "│", CONTEXT_PAIR, LINES - 10);
 
 	/* dialog inner right border */
-	draw_column(6, COLS-5, ' ', CONTEXT_PAIR, LINES - 10);
-	draw_column(6, COLS-6, '|', CONTEXT_PAIR, LINES - 10);
+	draw_column(6, COLS-5, " ", CONTEXT_PAIR, LINES - 10);
+	draw_column(6, COLS-6, "│", CONTEXT_PAIR, LINES - 10);
 
 	/* dialog inner top border */
-	draw_line(6, 5, '-', CONTEXT_PAIR, COLS - 11);
+	draw_line(6, 5, "─", CONTEXT_PAIR, COLS - 11);
 
 	/* dialog inner lower border */
-	draw_line(LINES-5, 5, '-', CONTEXT_PAIR, COLS - 11);
+	draw_line(LINES-5, 5, "─", CONTEXT_PAIR, COLS - 11);
 
 	/* dialog title area */
-	draw_line(2, 3, '-', CONTEXT_PAIR, COLS - 7);
+	draw_line(2, 3, "─", CONTEXT_PAIR, COLS - 7);
 
 	/* description area */
-	draw_line(3, 3, ' ', CONTEXT_PAIR, COLS - 7);
-	draw_line(4, 3, ' ', CONTEXT_PAIR, COLS - 7);
-	draw_line(5, 3, ' ', CONTEXT_PAIR, COLS - 7);
+	draw_line(3, 3, " ", CONTEXT_PAIR, COLS - 7);
+	draw_line(4, 3, " ", CONTEXT_PAIR, COLS - 7);
+	draw_line(5, 3, " ", CONTEXT_PAIR, COLS - 7);
 
 	/* options area */
-	draw_line(7, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(8, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(9, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(10, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(11, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(12, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(13, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(14, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(15, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(16, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(17, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(18, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(19, 5, ' ', CONTEXT_PAIR, COLS - 11);
-	draw_line(20, 5, ' ', CONTEXT_PAIR, COLS - 11);
+	draw_line(7, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(8, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(9, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(10, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(11, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(12, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(13, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(14, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(15, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(16, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(17, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(18, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(19, 5, " ", CONTEXT_PAIR, COLS - 11);
+	draw_line(20, 5, " ", CONTEXT_PAIR, COLS - 11);
 
 }
 
 int main(void)
 {
+	setlocale(LC_ALL, "en_US.UTF-8");
+
 	int ch;
 
 	initscr();
